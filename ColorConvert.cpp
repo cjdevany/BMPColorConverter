@@ -17,17 +17,6 @@ CS-3150
  * 
  * The output file name will automatically be appended with the proper conversion method,
  * and will output into the directory this program is ran from.
- * 
- * EZ GRADING RUBRIC:
- *  Confirm it's a valid BMP:           Line 153
- *  Validate based on header size:      Line 155
- *  Name the created file correctly:    Method on line 75, implemented on 201-218
- *  Command line input handled:         Lines 130-132
- *  Lightness formula definition:       Line 85
- *  Average formula definition:         Line 99
- *  Luminosity Formula definition:      Line 108
- *  Formula implementations:            Lines 169-197
- *  Created final output:               Lines 221-222
  */ 
 
 #include <iostream>
@@ -43,7 +32,7 @@ using namespace std;
 
 typedef unsigned char byte;
 
-#pragma pack(push, 1)					    //just to make sure these things are stored without padding.
+#pragma pack(push, 1)
 
 	/* This struct will save the first 14 bytes in the BMP header. */
 	struct BMP_Header {
@@ -54,8 +43,8 @@ typedef unsigned char byte;
 		uint32_t startAddress{0};			//starting address of the byte were the bitmap image data can be found.
 	};
 
-    /* For now, this program only handles 24 bit bitmaps so a Pixel has 3 bytes. */
-    struct Pixel {
+    /* For now, this program only handles 24 bit bitmaps so a Pixel_24 has 3 bytes. */
+    struct Pixel_24 {
         byte red;
         byte green;
         byte blue;
@@ -83,7 +72,7 @@ string stripFileName(string &name){
 /******** COLOR CONVERSION FUNCTIONS ********/
 
 //Lightness Method: (max(R,G,B) + min(R,G,B)) / 2
- byte lightnessConversion(Pixel &p) {
+ byte lightnessConversion(Pixel_24 &p) {
     byte b{0};
     uint8_t max, min;
     //find max
@@ -97,7 +86,7 @@ string stripFileName(string &name){
  }
 
 //Average Method: (R+G+B)/3
-byte averageConversion(Pixel &p) {
+byte averageConversion(Pixel_24 &p) {
     byte b{0};
     //avoid overflow
     int average = (p.red + p.green + p.blue) / 3;
@@ -106,7 +95,7 @@ byte averageConversion(Pixel &p) {
 }
 
 //Luminosity Method: .21*R + .72*G +.07*B
-byte luminosityConversion(Pixel &p) {
+byte luminosityConversion(Pixel_24 &p) {
     double r = .21*p.red;
     double g = .72*p.green;
     double b = .07*p.blue;
@@ -170,21 +159,21 @@ int main(int argc, char* argv[]) {
         int j = i;
         byte newValue;
 
-        //create a temp pixel with the next 3 bytes
-        Pixel pixel{buffer[i], buffer[++i], buffer[++i]};
+        //create a temp Pixel_24 with the next 3 bytes
+        Pixel_24 Pixel_24{buffer[i], buffer[++i], buffer[++i]};
 
-        //convert the pixel values to a single shade of grey.
+        //convert the Pixel_24 values to a single shade of grey.
         switch(conversionMethod){
             case 1:
-                newValue = lightnessConversion(pixel);
+                newValue = lightnessConversion(Pixel_24);
                 break;
 
             case 2:
-                newValue = averageConversion(pixel);
+                newValue = averageConversion(Pixel_24);
                 break;
             
             case 3:
-                newValue = luminosityConversion(pixel);
+                newValue = luminosityConversion(Pixel_24);
                 break;
 
             default:
